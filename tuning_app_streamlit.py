@@ -6,6 +6,7 @@ import math
 # ==============================================================================
 # 1. BERECHNUNGSLOGIK (unverändert)
 # ==============================================================================
+@st.cache_data
 def kurbelwinkel_zu_hub_exakt(kurbelwinkel_grad, pleuelstange_mm, hub_mm):
     if hub_mm <= 0 or pleuelstange_mm <= 0:
         return 0.0
@@ -24,6 +25,7 @@ def kurbelwinkel_zu_hub_exakt(kurbelwinkel_grad, pleuelstange_mm, hub_mm):
     )
     return kolbenweg_s
 
+@st.cache_data
 def hub_zu_kurbelwinkel(kolbenweg_mm, pleuelstange_mm, hub_mm, toleranz=0.0001):
     if hub_mm <= 0 or pleuelstange_mm <= 0 or kolbenweg_mm < 0:
         return 0.0
@@ -47,6 +49,7 @@ def hub_zu_kurbelwinkel(kolbenweg_mm, pleuelstange_mm, hub_mm, toleranz=0.0001):
             
     return (winkel_unten + winkel_oben) / 2
 
+@st.cache_data
 def berechne_auslass_resonanz(laenge_m, oeffnungswinkel_grad, schallgeschwindigkeit_ms):
     if laenge_m <= 0 or oeffnungswinkel_grad <= 0:
         return "Eingabewerte müssen positiv sein."
@@ -54,6 +57,7 @@ def berechne_auslass_resonanz(laenge_m, oeffnungswinkel_grad, schallgeschwindigk
     drehzahl = (schallgeschwindigkeit_ms * oeffnungswinkel_grad) / (12 * laenge_m)
     return f"{drehzahl:.0f} U/min"
 
+@st.cache_data
 def berechne_einlass_resonanz(oeffnungswinkel_grad, hubraum_ccm, kurbel_faktor, vergaser_d_mm, ansaug_faktor, ansaug_laenge):
     kurbelhausvolumen_cm3 = hubraum_ccm*kurbel_faktor
     querschnitt_cm2 = ansaug_faktor*(vergaser_d_mm/10/2)**2*math.pi
@@ -72,6 +76,7 @@ def berechne_einlass_resonanz(oeffnungswinkel_grad, hubraum_ccm, kurbel_faktor, 
 # ==============================================================================
 # 2. PLOT-FUNKTION FÜR DIE GRADSCHEIBE
 # ==============================================================================
+@st.cache_data
 def plotte_gradscheibe(zuendwinkel):
     fig, ax = plt.subplots(figsize=(10, 10), subplot_kw={'projection': 'polar'})
     
@@ -157,8 +162,8 @@ if tab_selection == "Resonanzdrehzahl Auslass":
         )
         schall_ms = st.slider(
             "Schallgeschwindigkeit im Abgas (m/s)", 
-            min_value=450, 
-            max_value=550, 
+            min_value=330, 
+            max_value=600, 
             value=500,
             help="Normalerweise ca. 500 m/s."
         )
@@ -248,7 +253,7 @@ elif tab_selection == "Werkzeuge":
         
         with col1:
             hub_input1 = st.number_input("Hub (mm)", min_value=1.0, value=44.0, step=0.1, key="hub1")
-            pleuel_input1 = st.number_input("Pleuellänge (mm)", min_value=1.0, value=95.0, step=0.1, key="pleuel1")
+            pleuel_input1 = st.number_input("Pleuellänge (mm)", min_value=1.0, value=85.0, step=0.1, key="pleuel1")
             kolbenweg_input = st.number_input("Kolbenweg vor OT (mm)", min_value=0.0, value=2.0, step=0.1)
             
             if st.button("Winkel berechnen", type="primary"):
@@ -271,7 +276,7 @@ elif tab_selection == "Werkzeuge":
         
         with col1:
             hub_input2 = st.number_input("Hub (mm)", min_value=1.0, value=44.0, step=0.1, key="hub2")
-            pleuel_input2 = st.number_input("Pleuellänge (mm)", min_value=1.0, value=95.0, step=0.1, key="pleuel2")
+            pleuel_input2 = st.number_input("Pleuellänge (mm)", min_value=1.0, value=85.0, step=0.1, key="pleuel2")
             winkel_input2 = st.slider("Kurbelwinkel nach OT (°)", min_value=0, max_value=180, value=90)
         
         with col2:
